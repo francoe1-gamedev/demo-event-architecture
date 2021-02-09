@@ -1,11 +1,12 @@
-﻿using Entities;
+﻿using System;
+using Entities;
 using Events;
 using Events.Payloads;
 using UnityEngine;
 
 namespace Controllers.Player
 {
-    public class PlayerShotController
+    public class PlayerShotController : IDisposable
     {
         private PlayerEntity m_playerEntity { get; set; }
         private int m_currentBullets { get; set; }
@@ -16,13 +17,13 @@ namespace Controllers.Player
         {
             m_playerEntity = playerEntity;
             m_eventBus = eventBus;
-            eventBus.Register<PlayerSetBulletEventPayload>(OnPlayerSetBulletEvent);
-            eventBus.Register<PlayerAddBulletEventPayload>(OnPlayerAddBulletEvent);
+            m_eventBus.Register<PlayerSetBulletEventPayload>(OnPlayerSetBulletEvent);
+            m_eventBus.Register<PlayerAddBulletEventPayload>(OnPlayerAddBulletEvent);
             
-            eventBus.Register<PlayerEnableShotEventPayload>(OnPlayerEnableShotEvent);
+            m_eventBus.Register<PlayerEnableShotEventPayload>(OnPlayerEnableShotEvent);
             
-            eventBus.Register<BulletThrowEventPayload>(OnBulletThrowEvent);
-            eventBus.Register<InputActionAEventPayload>(OnActionAEvent);
+            m_eventBus.Register<BulletThrowEventPayload>(OnBulletThrowEvent);
+            m_eventBus.Register<InputActionAEventPayload>(OnActionAEvent);
         }
 
         private void OnPlayerSetBulletEvent(PlayerSetBulletEventPayload payload)
@@ -55,6 +56,17 @@ namespace Controllers.Player
             {
                 m_eventBus.Dispatch(BulletThrowEventPayload.Create(m_playerEntity.transform, m_playerEntity.transform.position, Vector2.up, 5));
             }
+        }
+        
+        public void Dispose()
+        {  
+            m_eventBus.Unregister<PlayerSetBulletEventPayload>(OnPlayerSetBulletEvent);
+            m_eventBus.Unregister<PlayerAddBulletEventPayload>(OnPlayerAddBulletEvent);
+            
+            m_eventBus.Unregister<PlayerEnableShotEventPayload>(OnPlayerEnableShotEvent);
+            
+            m_eventBus.Unregister<BulletThrowEventPayload>(OnBulletThrowEvent);
+            m_eventBus.Unregister<InputActionAEventPayload>(OnActionAEvent);
         }
     }
 

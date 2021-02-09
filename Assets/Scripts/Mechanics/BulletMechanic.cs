@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using System;
+using Entities;
 using Events;
 using Events.Payloads;
 using Managers;
@@ -6,15 +7,15 @@ using UnityEngine;
 
 namespace Mechanics
 {
-    public class BulletMechanic
+    public class BulletMechanic : IDisposable
     {
         private IEventBus m_eventBus { get; set; }
 
         public BulletMechanic(IEventBus eventBus)
         {
             m_eventBus = eventBus;
-            eventBus.Register<BulletThrowEventPayload>(OnBulletThrowEvent);
-            eventBus.Register<BulletCollisionEventPayload>(OnBulletColllision);
+            m_eventBus.Register<BulletThrowEventPayload>(OnBulletThrowEvent);
+            m_eventBus.Register<BulletCollisionEventPayload>(OnBulletColllision);
         }
         
         private void OnBulletColllision(BulletCollisionEventPayload payload)
@@ -33,6 +34,12 @@ namespace Mechanics
             
             GameManager.Instance.GameFactory.BulletFactory.DestroyEntity(bulletEntity, 10);
             GameManager.Instance.GameFactory.BulletFactory.DestroyEntity(bulletEntity, x => Vector2.Distance(payload.FromPosition, x.transform.position) > 10);
+        }
+        
+        public void Dispose()
+        {
+            m_eventBus.Unregister<BulletThrowEventPayload>(OnBulletThrowEvent);
+            m_eventBus.Unregister<BulletCollisionEventPayload>(OnBulletColllision);
         }
     }
 }

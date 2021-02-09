@@ -1,9 +1,10 @@
-﻿using Events;
+﻿using System;
+using Events;
 using Events.Payloads;
 
 namespace Mechanics
 {
-    public class BulletPlayerMechanic
+    public class BulletPlayerMechanic : IDisposable
     {
         private IEventBus m_eventBus { get; set; }
 
@@ -16,6 +17,11 @@ namespace Mechanics
         private void OnPlayerUpdateBulletEvent(PlayerUpdateBulletEventPayload payload)
         {
             m_eventBus.Dispatch(PlayerEnableShotEventPayload.Create(payload.Amount > 0));
+        }
+        
+        public void Dispose()
+        {
+            m_eventBus.Unregister<PlayerUpdateBulletEventPayload>(OnPlayerUpdateBulletEvent);
         }
     }
 

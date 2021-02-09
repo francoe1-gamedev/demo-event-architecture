@@ -8,7 +8,10 @@ namespace Entities
         private void Start()
         {
             EventBus.Register<BulletCollisionEventPayload>(OnBulletCollisionEvent);
+            OnStart();
         }
+
+        protected virtual void OnStart() { }
 
         private void OnDestroy()
         {

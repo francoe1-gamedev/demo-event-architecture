@@ -1,15 +1,15 @@
-﻿using Entities;
+﻿using System;
+using Entities;
 using UnityEngine;
 
 namespace Factories
 {
+    [Serializable]
     public class BulletFactory : Factory<BulletEntity>
     {
         public BulletEntity Create()
         { 
-            BulletEntity bulletEntity = Instantiate(GetFirstPrefab(), Vector3.zero, Quaternion.identity);
-            RegisterEntity(bulletEntity);
-            return bulletEntity;
+            return Instantiate(GetFirstPrefab());
         }
     }
 }

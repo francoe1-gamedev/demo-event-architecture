@@ -1,4 +1,5 @@
-﻿using Events;
+﻿using System;
+using Events;
 using UnityEngine;
 
 namespace Entities
@@ -7,7 +8,7 @@ namespace Entities
     {
         public Transform Owner { get; private set; }
         protected IEventBus EventBus { get; private set; }
-        
+
         public Entity SetEventBus(IEventBus eventBus)
         {
             EventBus = eventBus;

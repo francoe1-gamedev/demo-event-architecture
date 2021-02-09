@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 namespace Factories
 {
     [Serializable]
-    public abstract class Factory<T> : MonoBehaviour where T : Component
+    public abstract class Factory<T> where T : Component
     {
         [SerializeField] private T[] m_prefabs;
 
@@ -18,11 +18,23 @@ namespace Factories
         private List<T> m_instances { get; set; } = new List<T>();
         public IReadOnlyList<T> Instances => m_instances;
 
+        public delegate void CorrutineDelegate(IEnumerator enumerator);
+        public CorrutineDelegate CorrutineHandle { set; private get; }
+
+        public T Create(int prefabIndex) =>  Instantiate(GetPrefab(prefabIndex));
+
         protected T GetFirstPrefab() => m_prefabs[0];
 
         protected T GetPrefab(int index) => m_prefabs[index];
 
         protected T GetRandomPrefab() => m_prefabs[Random.Range(0, m_prefabs.Length)];
+        
+        protected T Instantiate(T prefab)
+        {
+            T instance = GameObject.Instantiate(prefab);
+            RegisterEntity(instance);
+            return instance;
+        }
 
         protected void RegisterEntity(T entity)
         {
@@ -36,9 +48,9 @@ namespace Factories
             DestroyEntityProcess(entity);
         }
 
-        public void DestroyEntity(T entity, float delay) => StartCoroutine(IDestroyEntity(entity, delay));
+        public void DestroyEntity(T entity, float delay) => CorrutineHandle?.Invoke(IDestroyEntity(entity, delay));
 
-        public void DestroyEntity(T entity, Predicate<T> predicate) => StartCoroutine(IDestroyEntity(entity, predicate));
+        public void DestroyEntity(T entity, Predicate<T> predicate) => CorrutineHandle?.Invoke(IDestroyEntity(entity, predicate));
         
         private IEnumerator IDestroyEntity(T entity, float delay)
         {
@@ -75,7 +87,7 @@ namespace Factories
         {
             if (entity)
             {
-                Destroy(entity.gameObject);
+                GameObject.Destroy(entity.gameObject);
             }
         }
     }

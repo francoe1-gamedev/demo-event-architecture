@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections;
 using Bootstraps;
 using ScriptableObjects;
 using UnityEngine;
@@ -29,8 +29,13 @@ namespace Managers
         private void Start()
         {
             m_gameFactory = Instantiate(m_gameFactory);
+            m_gameFactory.BulletFactory.CorrutineHandle = FactoryCorrutine;
+            m_gameFactory.PlayerFactory.CorrutineHandle = FactoryCorrutine;
+            m_gameFactory.ObjectFactory.CorrutineHandle = FactoryCorrutine;
             m_gameBootstrap = new GameBootstrap();
         }
+
+        private void FactoryCorrutine(IEnumerator enumerator) => StartCoroutine(enumerator);
 
         private void Update()
         {

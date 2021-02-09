@@ -14,12 +14,5 @@ namespace ScriptableObjects
         public PlayerFactory PlayerFactory => m_playerFactory;
         public BulletFactory BulletFactory => m_bulletFactory;
         public ObjectFactory ObjectFactory => m_objectFactory;
-
-        private void Awake()
-        {
-            m_playerFactory = Instantiate(m_playerFactory);
-            m_bulletFactory = Instantiate(m_bulletFactory);
-            m_objectFactory = Instantiate(m_objectFactory);
-        }
     }
 }
